@@ -1,0 +1,7 @@
+_doc/*
+_counter.md
+*.session
+node_modules/*
+*.bak
+*.log
+_*.js
