@@ -151,6 +151,7 @@ module.exports = (function()  {
 
         upd.t    = raw.main.temp;
         upd.h    = raw.main.humidity;
+        upd.tfl  = raw.main.feels_like; // added
         upd.wd   = raw.wind.deg;
         upd.ws   = raw.wind.speed;
         upd.tmax = raw.main.temp_max;
@@ -158,12 +159,42 @@ module.exports = (function()  {
 
         upd.desc = raw.weather[0].description;
         upd.main = raw.weather[0].main;
-        upd.icon = wcfg.service.iconurl + raw.weather[0].icon +'.png';
+        upd.id   = raw.weather[0].id; // added
+        upd.icon = raw.weather[0].icon; // changed
+        upd.iconurl = wcfg.service.iconurl + raw.weather[0].icon +'.png'; // renamed
 
         // make a copy without references
         wxsvc.currobsv = JSON.parse(JSON.stringify(upd));
-
+        updateObsvText(wxsvc.currobsv)
         sys_evts.emit('WSVC_UPDATE', wxsvc.currobsv);
+    };
+
+    /*
+    */
+    function updateObsvText(wxdata) {
+        let obsdate = new Date(wxdata.gmt);
+        let gmt = obsdate.toLocaleString('en-US', {timeZone:wcfg.location.timezone, hour12:false});
+        gmt = gmt.replace(' ', '');
+        let ob = gmt.split(',');
+        let time = ob[1].split(':');
+        wxsvc.currobsv.text = {};
+        wxsvc.currobsv.text.datetime = ob[0] + ' @ ' + time[0] + ':' + time[1];
+    
+        let sr = new Date(wxdata.sr);
+        wxsvc.currobsv.text.sunup = sr.getHours() + ':' + (sr.getMinutes() < 10 ? '0' : '') + sr.getMinutes();;
+    
+        let ss = new Date(wxdata.ss);
+        wxsvc.currobsv.text.sundn = ss.getHours() + ':' + (ss.getMinutes() < 10 ? '0' : '') + ss.getMinutes();
+    
+        wxsvc.currobsv.text.feel = Math.round(wxdata.tfl) + ' °F';
+        wxsvc.currobsv.text.temp = Math.round(wxdata.t) + ' °F';
+        wxsvc.currobsv.text.humd = Math.round(wxdata.h) + ' %RH';
+    
+        wxsvc.currobsv.text.thi  = Math.round(wxdata.tmin) + ' °F';
+        wxsvc.currobsv.text.tlo  = Math.round(wxdata.tmax) + ' °F';
+    
+        wxsvc.currobsv.text.wspd = Math.round(wxdata.ws) + ' MPH'
+        wxsvc.currobsv.text.wdir = degToCard(wxdata.wd)
     };
 
     /*
