@@ -54,14 +54,18 @@ module.exports = (function()  {
         log = _log;
 
         sys_evts.on('WSVC_START', () => {
-            getCurrent(wcfg.location);
-            if(wcfg.config.updintvl !== 0) {
-                setInterval(getCurrent, wcfg.config.updintvl, wcfg.location);
+            if(wcfg.config.getcurr) {
+                getCurrent(wcfg.location);
+                if(wcfg.config.updintvl !== 0) {
+                    setInterval(getCurrent, wcfg.config.updintvl, wcfg.location);
+                }
             }
 
-            getForecast(wcfg.location);
-            if(wcfg.config.forintvl !== 0) {
-                setInterval(getForecast, wcfg.config.forintvl, wcfg.location);
+            if(wcfg.config.getfcast) {
+                getForecast(wcfg.location);
+                if(wcfg.config.forintvl !== 0) {
+                    setInterval(getForecast, wcfg.config.forintvl, wcfg.location);
+                }
             }
         });
     };
