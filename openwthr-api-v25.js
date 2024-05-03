@@ -321,6 +321,62 @@ module.exports = (function()  {
         wxsvc.forecast = JSON.parse(JSON.stringify(fcast));
         sys_evts.emit('WSVC_FORCST', wxsvc.forecast);
     };
+    
+    /*
+        Cardinal        Degree 
+        Direction 	    Direction
+        N               348.75 -  11.25
+        NNE              11.25 -  33.75
+        NE               33.75 -  56.25
+        ENE              56.25 -  78.75
+        E                78.75 - 101.25
+        ESE             101.25 - 123.75
+        SE              123.75 - 146.25
+        SSE             146.25 - 168.75
+        S               168.75 - 191.25
+        SSW             191.25 - 213.75
+        SW              213.75 - 236.25
+        WSW             236.25 - 258.75
+        W               258.75 - 281.25
+        WNW             281.25 - 303.75
+        NW              303.75 - 326.25
+        NNW             326.25 - 348.75
+    */
+    const wind_dir = [
+        {card:'North', from: 348.75, to:  11.25},
+        {card:'NNE',   from:  11.25, to:  33.75},
+        {card:'NE',    from:  33.75, to:  56.25},
+        {card:'ENE',   from:  56.25, to:  78.75},
+        {card:'East',  from:  78.75, to: 101.25},
+        {card:'ESE',   from: 101.25, to: 123.75},
+        {card:'SE',    from: 123.75, to: 146.25},
+        {card:'SSE',   from: 146.25, to: 168.75},
+        {card:'South', from: 168.75, to: 191.25},
+        {card:'SSW',   from: 191.25, to: 213.75},
+        {card:'SW',    from: 213.75, to: 236.25},
+        {card:'WSW',   from: 236.25, to: 258.75},
+        {card:'West',  from: 258.75, to: 281.25},
+        {card:'WNW',   from: 281.25, to: 303.75},
+        {card:'NW',    from: 303.75, to: 326.25},
+        {card:'NNW',   from: 326.25, to: 348.75}
+    ];
+    
+    function degToCard(deg) {
+    let card = '?';
+        // North is a special case, because it can be > 348.75
+        // or < 11.25. 
+        if((deg >= wind_dir[0].from) || (deg <= wind_dir[0].to))
+            card = wind_dir[0].card;
+        else {
+            for(ix = 1; ix < wind_dir.length; ix++) {
+                if((deg >= wind_dir[ix].from) && (deg <= wind_dir[ix].to)) {
+                    card = wind_dir[ix].card;
+                    break;
+                }
+            }
+        }
+        return card;
+    };
 
     return wxsvc;
 })();
