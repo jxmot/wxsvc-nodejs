@@ -41,10 +41,12 @@ module.exports = (function()  {
     let sys_evts = {};
 
     let log = undefined;
-
+    let dummyLog = () => {
+    };
+    
     /*
     */
-    wxsvc.init = function(evts, _log = undefined) {
+    wxsvc.init = function(evts, _log = dummyLog) {
         // will need to send events that will trigger
         // a data transfer to the clients
         sys_evts = evts;
