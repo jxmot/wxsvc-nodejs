@@ -34,6 +34,10 @@ module.exports = {
         updintvl: 3600000 * 1.5,
         // add 5min to stagger API calls
         forintvl: (3600000 * 1.5) + 300000
+        // 
+        getcurr: true,
+        // 
+        getfcast: false
     },
 
     urlparts : [
@@ -55,7 +59,7 @@ module.exports = {
     // Accept: application/geo+json
     headeraccept: ['application/geo+json', 'application/vnd.noaa.obs+xml'],
 
-    useragent: 'SensorNet Node App',
+    useragent: 'Generic Node App',
 
     // The result is a somewhat large chunk of data with a lot of stuff 
     // that isn't of any current interest. So we're showing only the 

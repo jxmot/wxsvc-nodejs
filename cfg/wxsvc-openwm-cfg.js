@@ -17,7 +17,8 @@ module.exports = {
             fullname: 'United States of America', 
             alphacode: ['US', 'USA'], 
             numcode: 840
-        }
+        },
+        timezone:'America/Chicago'
     },
 
 /*
@@ -50,7 +51,11 @@ module.exports = {
         // 1 hour = 3600000
         updintvl: 3600000 * 1.5,
         // add 5min to stagger API calls
-        forintvl: (3600000 * 1.5) + 300000
+        forintvl: (3600000 * 1.5) + 300000,
+        // 
+        getcurr: true,
+        // 
+        getfcast: false
     },
 
     urlparts : [
@@ -68,6 +73,6 @@ module.exports = {
         '&appid='
     ],
 
-    useragent: 'SensorNet Node App',
+    useragent: 'Generic Node App',
 };
 
