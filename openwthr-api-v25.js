@@ -149,8 +149,8 @@ module.exports = (function()  {
         // date/time of when data was collected
         upd.tstamp = Date.now();
 
-        upd.t    = raw.main.temp;
-        upd.h    = raw.main.humidity;
+        upd.temp = raw.main.temp;
+        upd.humd = raw.main.humidity;
         upd.tfl  = raw.main.feels_like; // added
         upd.wd   = raw.wind.deg;
         upd.ws   = raw.wind.speed;
@@ -178,7 +178,7 @@ module.exports = (function()  {
         let ob = gmt.split(',');
         let time = ob[1].split(':');
         wxsvc.currobsv.text = {};
-        wxsvc.currobsv.text.datetime = ob[0] + ' @ ' + time[0] + ':' + time[1];
+        wxsvc.currobsv.text.tstamp = ob[0] + ' @ ' + time[0] + ':' + time[1];
     
         let sr = new Date(wxdata.sr);
         wxsvc.currobsv.text.sunup = sr.getHours() + ':' + (sr.getMinutes() < 10 ? '0' : '') + sr.getMinutes();;
@@ -186,15 +186,16 @@ module.exports = (function()  {
         let ss = new Date(wxdata.ss);
         wxsvc.currobsv.text.sundn = ss.getHours() + ':' + (ss.getMinutes() < 10 ? '0' : '') + ss.getMinutes();
     
-        wxsvc.currobsv.text.feel = Math.round(wxdata.tfl) + ' °F';
-        wxsvc.currobsv.text.temp = Math.round(wxdata.t) + ' °F';
-        wxsvc.currobsv.text.humd = Math.round(wxdata.h) + ' %RH';
+        wxsvc.currobsv.text.feel = Math.round(wxdata.tfl) + '°F';
+        wxsvc.currobsv.text.temp = Math.round(wxdata.t) + '°F';
+        wxsvc.currobsv.text.humd = Math.round(wxdata.h) + '%';
     
-        wxsvc.currobsv.text.thi  = Math.round(wxdata.tmin) + ' °F';
-        wxsvc.currobsv.text.tlo  = Math.round(wxdata.tmax) + ' °F';
+        wxsvc.currobsv.text.thi  = Math.round(wxdata.tmin) + '°F';
+        wxsvc.currobsv.text.tlo  = Math.round(wxdata.tmax) + '°F';
     
         wxsvc.currobsv.text.wspd = Math.round(wxdata.ws) + ' MPH'
-        wxsvc.currobsv.text.wdir = degToCard(wxdata.wd)
+        wxsvc.currobsv.text.wdir = degToCard(wxdata.wd);
+        wxsvc.currobsv.text.wmsg = 'Winds are '+wxsvc.currobsv.text.wspd+' from the '+wxsvc.currobsv.text.wdir;
     };
 
     /*
