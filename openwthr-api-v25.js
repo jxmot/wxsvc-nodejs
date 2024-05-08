@@ -165,7 +165,7 @@ module.exports = (function()  {
 
         // make a copy without references
         wxsvc.currobsv = JSON.parse(JSON.stringify(upd));
-        updateObsvText(wxsvc.currobsv)
+        updateObsvText(wxsvc.currobsv);
         sys_evts.emit('WSVC_UPDATE', wxsvc.currobsv);
     };
 
