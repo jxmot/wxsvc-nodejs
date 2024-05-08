@@ -2,7 +2,7 @@
     NOAA Service Configuration & Helper Functions
 
     An API for the NOAA's Weather API. See 
-        https://forecast-v3.weather.gov/documentation
+        https://www.weather.gov/documentation/services-web-api
     for information.
 */
 module.exports = (function()  {
@@ -43,14 +43,18 @@ module.exports = (function()  {
         log = _log;
 
         sys_evts.on('WSVC_START', () => {
-            getCurrent(wcfg.default_station);
-            if(wcfg.config.updintvl !== 0) {
-                setInterval(getCurrent, wcfg.config.updintvl, wcfg.default_station);
+            if(wcfg.config.getcurr) {
+                getCurrent(wcfg.default_station);
+                if(wcfg.config.updintvl !== 0) {
+                    setInterval(getCurrent, wcfg.config.updintvl, wcfg.default_station);
+                }
             }
 
-            getPointMeta(wcfg.default_station);
-            if(wcfg.config.forintvl !== 0) {
-                setInterval(getPointMeta, wcfg.config.forintvl, wcfg.default_station);
+            if(wcfg.config.getfcast) {
+                getPointMeta(wcfg.default_station);
+                if(wcfg.config.forintvl !== 0) {
+                    setInterval(getPointMeta, wcfg.config.forintvl, wcfg.default_station);
+                }
             }
         });
     };
@@ -109,7 +113,9 @@ module.exports = (function()  {
         upd.format = 'noaa-v3';
 
         upd.svc = wcfg.service.name;
-
+        //// url for retrieving icons
+        //upd.iconurl = raw.properties.icon;
+        
         upd.sta = origin.sta;
         upd.plc = origin.plc;
      
@@ -117,24 +123,64 @@ module.exports = (function()  {
         let d = new Date(raw.properties.timestamp);
         upd.gmt = d.getTime();
 
+        upd.sr  = null;
+        upd.ss  = null;
+
         // date/time of when data was collected
         upd.tstamp = Date.now();
 
-        upd.t   = centToFar(raw.properties.temperature);
-        upd.h   = Math.round(raw.properties.relativeHumidity.value);
+        upd.temp = centToFar(raw.properties.temperature);
+        upd.humd = Math.round(raw.properties.relativeHumidity.value);
+        upd.tfl  = null;
+
         upd.wd  = Math.round(raw.properties.windDirection.value);
-        upd.ws  = metsToMPH(raw.properties.windSpeed);
-        upd.wg  = metsToMPH(raw.properties.windGust);
+        upd.ws  = kphToMPH(raw.properties.windSpeed);
+
+        upd.tmax = null;
+        upd.tmin = null;
+
+        upd.desc = raw.properties.textDescription;
+        upd.main = null;
+        upd.id   = null;
+        upd.icon = null;
+        upd.iconurl = raw.properties.icon;
+
+        upd.wg  = kphToMPH(raw.properties.windGust);
         upd.wch = centToFar(raw.properties.windChill);
-        upd.txt = raw.properties.textDescription;
         upd.dew = centToFar(raw.properties.dewpoint);
         upd.hix = centToFar(raw.properties.heatIndex);
         upd.bar = paToInchesMerc(raw.properties.barometricPressure);
 
         // make a copy without references
         wxsvc.currobsv = JSON.parse(JSON.stringify(upd));
-
+        updateObsvText(wxsvc.currobsv);
         sys_evts.emit('WSVC_UPDATE', wxsvc.currobsv);
+    };
+
+    /*
+    */
+    function updateObsvText(wxdata) {
+        let obsdate = new Date(wxdata.gmt);
+        let gmt = obsdate.toLocaleString('en-US', {timeZone:wcfg.location.timezone, hour12:false});
+        gmt = gmt.replace(' ', '');
+        let ob = gmt.split(',');
+        let time = ob[1].split(':');
+        wxsvc.currobsv.text = {};
+        wxsvc.currobsv.text.tstamp = ob[0] + ' @ ' + time[0] + ':' + time[1];
+    
+        wxsvc.currobsv.text.sunup = null;
+        wxsvc.currobsv.text.sundn = null;
+    
+        wxsvc.currobsv.text.feel = null;
+        wxsvc.currobsv.text.temp = Math.round(wxdata.temp) + '°F';
+        wxsvc.currobsv.text.humd = Math.round(wxdata.humd) + '%';
+    
+        wxsvc.currobsv.text.thi  = null;
+        wxsvc.currobsv.text.tlo  = null;
+    
+        wxsvc.currobsv.text.wspd = Math.round(wxdata.ws) + ' MPH'
+        wxsvc.currobsv.text.wdir = degToCard(wxdata.wd);
+        wxsvc.currobsv.text.wmsg = 'Winds are '+wxsvc.currobsv.text.wspd+' from the '+wxsvc.currobsv.text.wdir;
     };
 
     /*
@@ -321,7 +367,7 @@ module.exports = (function()  {
 
         if(rawtemp.value !== null) {
             // http://codes.wmo.int/common/unit
-            if(rawtemp.unitCode === 'unit:degC') 
+            if(rawtemp.unitCode === 'wmoUnit:degC') 
                 tempRet = Math.round(rawtemp.value * 9 / 5 + 32);
             else 
                 tempRet = Math.round(rawtemp.value);
@@ -331,12 +377,12 @@ module.exports = (function()  {
 
     /*
     */
-    function metsToMPH(rawwind) {
+    function kphToMPH(rawwind) {
         var windRet = -999.999;
 
         if(rawwind.value !== null) {
-            if(rawwind.unitCode === 'unit:m_s-1')
-                windRet = Math.round(rawwind.value / 0.44704);
+            if(rawwind.unitCode === 'wmoUnit:km_h-1')
+                windRet = Math.round(rawwind.value / 1.609344);
             else
                 windRet = Math.round(rawwind.value);
         }
@@ -349,12 +395,68 @@ module.exports = (function()  {
         let mercRet = -999.999
 
         if(rawpa.value !== null) {
-            if(rawpa.unitCode === 'unit:pa')
+            if(rawpa.unitCode === 'wmoUnit:Pa')
                 mercRet = Math.round(rawpa.value * 0.0002952998);
             else
                 mercRet = Math.round(rawpa.value);
         }
         return mercRet;
+    };
+
+    /*
+        Cardinal        Degree 
+        Direction 	    Direction
+        N               348.75 -  11.25
+        NNE              11.25 -  33.75
+        NE               33.75 -  56.25
+        ENE              56.25 -  78.75
+        E                78.75 - 101.25
+        ESE             101.25 - 123.75
+        SE              123.75 - 146.25
+        SSE             146.25 - 168.75
+        S               168.75 - 191.25
+        SSW             191.25 - 213.75
+        SW              213.75 - 236.25
+        WSW             236.25 - 258.75
+        W               258.75 - 281.25
+        WNW             281.25 - 303.75
+        NW              303.75 - 326.25
+        NNW             326.25 - 348.75
+    */
+    const wind_dir = [
+        {card:'North', from: 348.75, to:  11.25},
+        {card:'NNE',   from:  11.25, to:  33.75},
+        {card:'NE',    from:  33.75, to:  56.25},
+        {card:'ENE',   from:  56.25, to:  78.75},
+        {card:'East',  from:  78.75, to: 101.25},
+        {card:'ESE',   from: 101.25, to: 123.75},
+        {card:'SE',    from: 123.75, to: 146.25},
+        {card:'SSE',   from: 146.25, to: 168.75},
+        {card:'South', from: 168.75, to: 191.25},
+        {card:'SSW',   from: 191.25, to: 213.75},
+        {card:'SW',    from: 213.75, to: 236.25},
+        {card:'WSW',   from: 236.25, to: 258.75},
+        {card:'West',  from: 258.75, to: 281.25},
+        {card:'WNW',   from: 281.25, to: 303.75},
+        {card:'NW',    from: 303.75, to: 326.25},
+        {card:'NNW',   from: 326.25, to: 348.75}
+    ];
+    
+    function degToCard(deg) {
+    let card = '?';
+        // North is a special case, because it can be > 348.75
+        // or < 11.25. 
+        if((deg >= wind_dir[0].from) || (deg <= wind_dir[0].to))
+            card = wind_dir[0].card;
+        else {
+            for(ix = 1; ix < wind_dir.length; ix++) {
+                if((deg >= wind_dir[ix].from) && (deg <= wind_dir[ix].to)) {
+                    card = wind_dir[ix].card;
+                    break;
+                }
+            }
+        }
+        return card;
     };
 
     return wxsvc;

@@ -26,31 +26,31 @@ module.exports = {
     service: {
         name: 'NOAA',
         hostname: 'api.weather.gov',
-        docurl: 'https://forecast-v3.weather.gov/documentation',
+        docurl: 'https://www.weather.gov/documentation/services-web-api',
     },
 
     config: {
         // 1 hour = 3600000
         updintvl: 3600000 * 1.5,
         // add 5min to stagger API calls
-        forintvl: (3600000 * 1.5) + 300000
+        forintvl: (3600000 * 1.5) + 300000,
         // 
         getcurr: true,
         // 
-        getfcast: false
+        getfcast: true
     },
 
     urlparts : [
         '/stations',
         '/observations',
-        '/current',
+        '/latest',
         '/points',
         '/forecast',
         '/gridpoints'
     ],
 
     // XML or JSON can be selected for the format of the returned data by 
-    // changing thr 'accept' field in the header :
+    // changing the 'accept' field in the header :
     // 
     // For XML:
     // Accept: application/vnd.noaa.obs+xml
