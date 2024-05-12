@@ -37,7 +37,7 @@ module.exports = {
         // 
         getcurr: true,
         // 
-        getfcast: true
+        getfcast: false
     },
 
     urlparts : [

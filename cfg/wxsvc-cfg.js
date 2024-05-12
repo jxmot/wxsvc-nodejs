@@ -1,3 +1,4 @@
 module.exports = {
-    api: './noaa-api.js'
+    //api: './noaa-api.js'
+    api: './openwthr-api.js'
 };

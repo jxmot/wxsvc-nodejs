@@ -187,11 +187,11 @@ module.exports = (function()  {
         wxsvc.currobsv.text.sundn = ss.getHours() + ':' + (ss.getMinutes() < 10 ? '0' : '') + ss.getMinutes();
     
         wxsvc.currobsv.text.feel = Math.round(wxdata.tfl) + '°F';
-        wxsvc.currobsv.text.temp = Math.round(wxdata.t) + '°F';
-        wxsvc.currobsv.text.humd = Math.round(wxdata.h) + '%';
+        wxsvc.currobsv.text.temp = Math.round(wxdata.temp) + '°F';
+        wxsvc.currobsv.text.humd = Math.round(wxdata.humd) + '%';
     
-        wxsvc.currobsv.text.thi  = Math.round(wxdata.tmin) + '°F';
-        wxsvc.currobsv.text.tlo  = Math.round(wxdata.tmax) + '°F';
+        wxsvc.currobsv.text.thi  = Math.round(wxdata.tmax) + '°F';
+        wxsvc.currobsv.text.tlo  = Math.round(wxdata.tmin) + '°F';
     
         wxsvc.currobsv.text.wspd = Math.round(wxdata.ws) + ' MPH'
         wxsvc.currobsv.text.wdir = degToCard(wxdata.wd);
