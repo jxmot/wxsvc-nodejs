@@ -110,7 +110,7 @@ module.exports = (function()  {
         let upd = {};
         let raw = JSON.parse(data);
 
-        upd.format = 'noaa-v3';
+        upd.format = 'noaa';
 
         upd.svc = wcfg.service.name;
         //// url for retrieving icons
@@ -316,7 +316,7 @@ module.exports = (function()  {
             log('parseForecast resending last forecast');
             sys_evts.emit('WSVC_FORCST', wxsvc.forecast);
         } else {
-            fcast.format = 'noaa-v3';
+            fcast.format = 'noaa';
 
             // the data provider
             fcast.svc = wcfg.service.name;

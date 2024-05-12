@@ -60,45 +60,5 @@ module.exports = {
     headeraccept: ['application/geo+json', 'application/vnd.noaa.obs+xml'],
 
     useragent: 'Generic Node App',
-
-    // The result is a somewhat large chunk of data with a lot of stuff 
-    // that isn't of any current interest. So we're showing only the 
-    // fields that matter(JSON)...
-    // 
-    // 'properties': {
-    //      'textDescription': 'Partly Cloudy',
-    //      'temperature': {'value': 26.700000000000045, 'unitCode': 'unit:degC'},
-    //      'windGust': {'value': null, 'unitCode': 'unit:m_s-1'}
-    // }
-    // 
-    // The XML formatted data is a bit nicer. It's because some of the data 
-    // is already formatted and textualized for display. For example :
-    //
-    //  <weather>Partly Cloudy</weather>
-    //  <wind_string>E at 8.1 MPH (7 KT)</wind_string>
-    // 
-    // And both temperature scales are provided :
-    // 
-    //  <temp_f>73.9</temp_f>
-    //  <temp_c>23.3</temp_c>
-    //  <temperature_string>73.9 F (23.3 C)</temperature_string>
-
-    // https://api.weather.gov/stations/KORD/observations/current
-    // service.apiurl + urlparts[0] + stations[0].id + urlparts[1] + urlparts[2]
-    //
-    obsvfields: [
-        'temperature',
-        'relativeHumidity',
-        'dewpoint',
-        'windChill',
-        'heatIndex',
-
-        'windDirection',
-        'windSpeed',
-        'windGust',
-
-        'barometricPressure',
-        'visibility'
-    ]
 };
 

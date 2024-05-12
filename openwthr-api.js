@@ -122,7 +122,7 @@ module.exports = (function()  {
         let upd = {};
         let raw = JSON.parse(data);
 
-        upd.format = 'owm-v25';
+        upd.format = 'owm';
 
         upd.svc = wcfg.service.name;
         // url for retrieving icons
