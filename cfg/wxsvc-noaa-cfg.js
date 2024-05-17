@@ -57,7 +57,7 @@ module.exports = {
     // 
     // GeoJSON is the default, use either no accept or :
     // Accept: application/geo+json
-    headeraccept: ['application/geo+json', 'application/vnd.noaa.obs+xml'],
+    headeraccept: ['application/geo+json', 'application/geo+json', 'application/vnd.noaa.obs+xml'],
 
     useragent: 'Generic Node App',
 };

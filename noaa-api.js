@@ -24,7 +24,8 @@ module.exports = (function()  {
     const UPARTS_GRIDPOINTS   = UPARTS_FORECAST + 1;
 
     const HEADER_ACCJSON      = 0;
-    const HEADER_ACCXML       = 1;
+    const HEADER_LDJSON       = 1;
+    const HEADER_ACCXML       = 2;
 
     const LOC_LAT             = 0;
     const LOC_LON             = 1;
@@ -67,7 +68,8 @@ module.exports = (function()  {
             method: 'GET',
             path: wcfg.urlparts[UPARTS_STATIONS] + '/' + wcfg.stations[idx].id + wcfg.urlparts[UPARTS_OBSERVATIONS] + wcfg.urlparts[UPARTS_CURRENT],
             headers: {
-                'accept':wcfg.headeraccept[HEADER_ACCJSON]
+                'accept':wcfg.headeraccept[HEADER_LDJSON]
+                //'accept':wcfg.headeraccept[HEADER_ACCJSON]
                 ,'user-agent':wcfg.useragent
             }
         };
@@ -178,9 +180,15 @@ module.exports = (function()  {
         wxsvc.currobsv.text.thi  = null;
         wxsvc.currobsv.text.tlo  = null;
     
-        wxsvc.currobsv.text.wspd = Math.round(wxdata.ws) + ' MPH'
-        wxsvc.currobsv.text.wdir = degToCard(wxdata.wd);
-        wxsvc.currobsv.text.wmsg = 'Winds are '+wxsvc.currobsv.text.wspd+' from the '+wxsvc.currobsv.text.wdir;
+        if(wxdata.ws >= 1) {
+            wxsvc.currobsv.text.wspd = Math.round(wxdata.ws) + ' MPH'
+            wxsvc.currobsv.text.wdir = degToCard(wxdata.wd);
+            wxsvc.currobsv.text.wmsg = 'Winds are '+wxsvc.currobsv.text.wspd+' from the '+wxsvc.currobsv.text.wdir;
+        } else {
+            wxsvc.currobsv.text.wspd = '0 MPH'
+            wxsvc.currobsv.text.wdir = '';
+            wxsvc.currobsv.text.wmsg = '';
+        }
     };
 
     /*
